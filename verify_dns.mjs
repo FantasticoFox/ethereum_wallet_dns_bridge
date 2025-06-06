@@ -30,7 +30,7 @@ const doSign = async (wallet, content) => {
 }
 
 const verifySignature = async (signature, walletAddress, content) => {
-  const recoveredAddress = ethers.verifyMessage(content, signature);
+  const recoveredAddress = ethers.utils.verifyMessage(content, signature);
   return recoveredAddress.toLowerCase() === walletAddress
 }
 
