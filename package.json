@@ -1,0 +1,40 @@
+{
+  "name": "wallet-domain-lookup",
+  "version": "1.0.0",
+  "description": "A CLI tool for associating cryptocurrency wallet addresses with domain names using DNS TXT records",
+  "main": "dist/wallet-tool.js",
+  "bin": {
+    "wallet-tool": "dist/wallet-tool.js"
+  },
+  "scripts": {
+    "build": "node build.js",
+    "dev": "tsc && node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "wallet",
+    "domain",
+    "dns",
+    "cryptocurrency",
+    "ethereum",
+    "cli",
+    "verification"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@metamask/sdk": "^0.33.0",
+    "commander": "^14.0.0",
+    "dns-packet": "^5.6.1",
+    "dotenv": "^16.5.0",
+    "ethers": "^5.7.2",
+    "inquirer": "^12.6.3"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.8",
+    "@types/node": "^22.15.30",
+    "esbuild": "^0.25.5",
+    "typescript": "^5.8.3"
+  }
+}
