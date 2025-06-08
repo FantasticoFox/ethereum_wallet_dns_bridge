@@ -58,7 +58,7 @@ node dist/wallet-tool.js generate example.com 0xYourPrivateKey
 
 **Add the generated TXT record to your DNS:**
 - Record Name: `aqua._wallet.example.com`
-- Record Value: `wallet=0xAbC123...;nonce=a1b2c3d4e5;timestamp=1234567890;sig=0xdef456...`
+- Record Value: `wallet=0xAbC123...&timestamp=1234567890&expiration=1234567890&sig=0xdef456...`
 
 **Verify the association:**
 ```bash
@@ -92,12 +92,12 @@ aqua._wallet.<your-domain.com>
 
 **Record Value Format:**
 ```
-wallet=<address>;nonce=<nonce>;timestamp=<timestamp>;sig=<signature>
+wallet=<address>&timestamp=<timestamp>&expiration=<expiration>&sig=<signature>
 ```
 
 **Example:**
 - **Name**: `aqua._wallet.mycompany.com`
-- **Value**: `wallet=0x742d35Cc6734C0532925a3b8D0a69e0019...&timestamp=1703123456&sig=0x8f2e4d...`
+- **Value**: `wallet=0x742d35Cc6734C0532925a3b8D0a69e0019...&timestamp=1703123456&expiration=1710899456&sig=0x8f2e4d...`
 
 ## Use Cases
 

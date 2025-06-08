@@ -42,8 +42,9 @@ switch (command) {
       credentials.mnemonic,
     )
     const timestamp = Math.floor(Date.now() / 1000)
-    const signature = await doSign(wallet, `${timestamp}|domainName`)
-    payload = `wallet=${_walletAddress}&timestamp=${timestamp}&sig=${signature}`
+    const expiration = Math.floor(Date.now() / 1000 + (90 * 24 * 60 * 60)) // 90 days
+    const signature = await doSign(wallet, `${timestamp}|${domainName}|${expiration}`)
+    payload = `wallet=${_walletAddress}&timestamp=${timestamp}&expiration=${expiration}&sig=${signature}`
     console.log(`Put this in your DNS TXT record (${payload.length} chars):`)
     console.log(payload)
   case "verify":
@@ -51,6 +52,6 @@ switch (command) {
     const txtRecord = rawRecords.map(parts => parts.join(''))[0]
     const urlParam = new URLSearchParams(txtRecord)
     payload = Object.fromEntries(urlParam)
-    const sigOk = await verifySignature(payload.sig, payload.wallet, `${payload.timestamp}|${domainName}`)
+    const sigOk = await verifySignature(payload.sig, payload.wallet, `${payload.timestamp}|${domainName}|${payload.expiration}`)
     console.log(sigOk)
 }

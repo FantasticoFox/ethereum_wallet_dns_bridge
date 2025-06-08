@@ -1,14 +1,15 @@
 export interface Proof {
   walletAddress: string;
   domainName: string;
-  nonce: string;
   timestamp: string;
+  expiration: string;
   signature: string;
 }
 
 export interface TxtRecord {
   wallet: string;
   timestamp: string;
+  expiration: string;
   sig: string;
 }
 

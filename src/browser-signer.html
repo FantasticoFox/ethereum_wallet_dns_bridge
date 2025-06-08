@@ -91,25 +91,27 @@ const domain=document.getElementById('domain').value.trim();
 if(!domain){alert('Please enter a domain name');return;}
 try{
 timestamp=Math.floor(Date.now()/1000).toString();
-// Message format: unix_timestamp|domain_name (no nonce needed)
-const message=`${timestamp}|${domain}`;
+const expiration=Math.floor(Date.now()/1000+(90*24*60*60)).toString(); // 90 days default
+// Message format: unix_timestamp|domain_name|expiration_timestamp
+const message=`${timestamp}|${domain}|${expiration}`;
 console.log('Signing message (before EIP-191 formatting):', message);
 console.log('MetaMask will apply EIP-191 formatting automatically');
 document.getElementById('sign-btn').textContent='Signing...';
 document.getElementById('sign-btn').disabled=true;
 const signature=await ethereum.request({method:'personal_sign',params:[message,account]});
-generateOutputs(domain,signature);
+generateOutputs(domain,signature,expiration);
 }catch(error){
 alert('Failed to sign: '+error.message);
 document.getElementById('sign-btn').textContent='Generate Signature';
 document.getElementById('sign-btn').disabled=false;
 }}
-function generateOutputs(domain,signature){
+function generateOutputs(domain,signature,expiration){
 const cliCommand=`node dist/wallet-tool.js generate-from-browser "${domain}" "${account}" "${signature}"`;
-const txtRecord=`wallet=${account}&timestamp=${timestamp}&sig=${signature}`;
+const txtRecord=`wallet=${account}&timestamp=${timestamp}&expiration=${expiration}&sig=${signature}`;
 
 console.log('Generated CLI command:', cliCommand);
 console.log('Generated TXT record:', txtRecord);
+console.log('Expires:', new Date(parseInt(expiration)*1000).toISOString());
 
 document.getElementById('cli-command').textContent=cliCommand;
 document.getElementById('txt-record').textContent=txtRecord;

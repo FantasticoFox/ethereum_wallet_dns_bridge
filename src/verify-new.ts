@@ -118,29 +118,12 @@ export async function verifyProof(domain: string, lookupKey: string): Promise<bo
     totalTests++;
     console.log(`\nTest 2/8: Wallet Record Format`);
     
-    // Check for new format first (with expiration)
-    let txtRecord = txtRecords.flat().find(record => 
+    const txtRecord = txtRecords.flat().find(record => 
       record.includes('wallet=') && 
       record.includes('timestamp=') && 
       record.includes('expiration=') && 
       record.includes('sig=')
     );
-    
-    let isLegacyFormat = false;
-    
-    // Fallback to legacy format (without expiration)
-    if (!txtRecord) {
-      txtRecord = txtRecords.flat().find(record => 
-        record.includes('wallet=') && 
-        record.includes('timestamp=') && 
-        record.includes('sig=')
-      );
-      if (txtRecord) {
-        isLegacyFormat = true;
-        console.log('   ⚠️  WARNING: Legacy format detected (no expiration field)');
-        console.log('   ℹ️  Please regenerate your signature for enhanced security');
-      }
-    }
     
     if (!txtRecord) {
       console.log('   ❌ FAIL: No wallet record with required format found');
@@ -158,13 +141,6 @@ export async function verifyProof(domain: string, lookupKey: string): Promise<bo
     console.log(`\nTest 3/8: Field Parsing`);
     
     const parsedRecord = parseTxtRecord(txtRecord);
-    
-    // For legacy format, set a default expiration (90 days from timestamp)
-    if (isLegacyFormat && parsedRecord.timestamp && !parsedRecord.expiration) {
-      parsedRecord.expiration = (parseInt(parsedRecord.timestamp) + (90 * 24 * 60 * 60)).toString();
-      console.log('   ℹ️  Legacy format: Using default 90-day expiration');
-    }
-    
     if (!parsedRecord.wallet || !parsedRecord.timestamp || !parsedRecord.expiration || !parsedRecord.sig) {
       console.log('   ❌ FAIL: Missing required fields after parsing');
       console.log('   ℹ️  Required: wallet, timestamp, expiration, sig');
@@ -184,9 +160,7 @@ export async function verifyProof(domain: string, lookupKey: string): Promise<bo
     console.log(`\nTest 4/8: Message Format & EIP-191 Preparation`);
     
     // Reconstruct the original message (before EIP-191 formatting)
-    const originalMessage = isLegacyFormat 
-      ? `${parsedRecord.timestamp}|${domain}` 
-      : `${parsedRecord.timestamp}|${domain}|${parsedRecord.expiration}`;
+    const originalMessage = `${parsedRecord.timestamp}|${domain}|${parsedRecord.expiration}`;
     console.log(`   📝 Expected format: "timestamp|domain|expiration"`);
     console.log(`   ℹ️  Message to verify: "${originalMessage}"`);
     console.log(`   ℹ️  EIP-191 Note: ethers.js handles automatic EIP-191 formatting`);
@@ -284,10 +258,9 @@ export async function verifyProof(domain: string, lookupKey: string): Promise<bo
         
         // Extract the domain from the verified message
         const messageParts = originalMessage.split('|');
-        const expectedParts = isLegacyFormat ? 2 : 3;
-        if (messageParts.length !== expectedParts) {
+        if (messageParts.length !== 3) {
           console.log('   ❌ FAIL: Invalid message format');
-          console.log(`   ℹ️  Expected: ${isLegacyFormat ? 'timestamp|domain' : 'timestamp|domain|expiration'}`);
+          console.log(`   ℹ️  Expected: timestamp|domain|expiration`);
           console.log(`   ℹ️  Found: ${messageParts.length} parts`);
           return false;
         }

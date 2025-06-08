@@ -68,15 +68,17 @@ program
     try {
       console.log('🔐 Processing browser signature...');
       
-      // Generate timestamp from local system time
+      // Generate timestamp and expiration from local system time
       const timestamp = Math.floor(Date.now() / 1000).toString();
+      const expiration = Math.floor(Date.now() / 1000 + (90 * 24 * 60 * 60)).toString(); // 90 days default
       
       console.log(`\n🌐 Domain: ${domain}`);
       console.log(`🦊 Wallet Address: ${walletAddress}`);
       console.log(`⏰ System Timestamp: ${timestamp}`);
+      console.log(`📅 Expiration: ${new Date(parseInt(expiration) * 1000).toISOString()}`);
       
-      // Create proof object (no nonce)
-      const proof = generateProofFromSignature(domain, walletAddress, timestamp, '', signature);
+      // Create proof object with expiration
+      const proof = generateProofFromSignature(domain, walletAddress, timestamp, expiration, signature);
       const txtRecord = formatTxtRecord(proof);
       
       console.log('\n✅ Proof generated successfully from browser signature!');
